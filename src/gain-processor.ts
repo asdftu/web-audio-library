@@ -48,4 +48,9 @@ export class GainProcessor {
     console.log(`change gain node value to ${v}`);
   }
 
+  public release() {
+    this.sourceNode.disconnect();
+    this.gainNode.disconnect();
+  }
+
 }

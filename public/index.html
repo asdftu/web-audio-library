@@ -10,7 +10,8 @@
 <!--<video id="v2" src="test.mp4" loop controls></video>-->
 
 <div>
-  <button id="test">start</button>
+  <button id="start">start</button>
+  <button id="stop">stop</button>
   <button id="mute">mute</button>
   <span id="vuMeter"></span>
 </div>
@@ -18,15 +19,18 @@
 <script>
   var video = document.querySelector('#v1');
   // var anotherVideo = document.querySelector('#v2');
-  var btn = document.querySelector('#test');
+  var btn = document.querySelector('#start');
   var vuSpan = document.querySelector('#vuMeter');
   var GainProcessor = webAudioLibrary.GainProcessor;
   var AudioMeterProcessor = webAudioLibrary.AudioMeterProcessor;
   var gainProcessor;
   var anotherGainProcessor;
+  var audioCtx = null;
   btn.onclick = function () {
-    var AudioContext = window.AudioContext || window.webkitAudioContext;
-    var audioCtx = new AudioContext();
+    if (!audioCtx) {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+    }
     var source = audioCtx.createMediaElementSource(video);
     gainProcessor = new GainProcessor(source, audioCtx);
     vuMeterProcessor = new AudioMeterProcessor(source, (vus) => {
@@ -37,6 +41,13 @@
     // var anotherSource = audioCtx.createMediaElementSource(anotherVideo);
     // anotherGainProcessor = new GainProcessor(anotherSource, audioCtx);
     // anotherVideo.play();
+  }
+  var stopBtn = document.querySelector('#stop');
+  stopBtn.onclick = function () {
+    gainProcessor.release();
+    vuMeterProcessor.release();
+    audioCtx.close();
+    audioCtx = null;
   }
   var muteBtn = document.querySelector('#mute');
   muteBtn.onclick = function () {

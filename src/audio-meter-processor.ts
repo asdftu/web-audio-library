@@ -21,6 +21,7 @@ export class AudioMeterProcessor {
   private audioContext: any;
   private channelCount: number = 2;
   private sourceNode: any;
+  private meterNode: any;
   private percentArray: number[] = [];
   private vuMeterCallback: ((vu: number[]) => void) | null = null;
 
@@ -69,7 +70,7 @@ export class AudioMeterProcessor {
       console.log('create audioContext instance internal');
     }
     let c = this.channelCount = this.sourceNode.channelCount;
-    let meterNode = this.audioContext.createScriptProcessor(8192, c, c);
+    let meterNode = this.meterNode = this.audioContext.createScriptProcessor(8192, c, c);
     meterNode.onaudioprocess = this.updateMeter.bind(this);
     this.sourceNode.connect(meterNode);
     meterNode.connect(this.audioContext.destination);
@@ -79,5 +80,7 @@ export class AudioMeterProcessor {
 
   public release() {
     this.vuMeterCallback = null;
+    this.sourceNode.disconnect();
+    this.meterNode.disconnect();
   }
 }
