@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Audio Library Test HTML</title>
+    <script src="../dist/web-audio-library.umd.js"></script>
+</head>
+<body>
+<video id="v1" src="test.mp4" loop controls></video>
+<!--<video id="v2" src="test.mp4" loop controls></video>-->
+
+<div>
+  <button id="test">start</button>
+  <button id="mute">mute</button>
+  <span id="vuMeter"></span>
+</div>
+
+<script>
+  var video = document.querySelector('#v1');
+  // var anotherVideo = document.querySelector('#v2');
+  var btn = document.querySelector('#test');
+  var vuSpan = document.querySelector('#vuMeter');
+  var GainProcessor = webAudioLibrary.GainProcessor;
+  var AudioMeterProcessor = webAudioLibrary.AudioMeterProcessor;
+  var gainProcessor;
+  var anotherGainProcessor;
+  btn.onclick = function () {
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    var audioCtx = new AudioContext();
+    var source = audioCtx.createMediaElementSource(video);
+    gainProcessor = new GainProcessor(source, audioCtx);
+    vuMeterProcessor = new AudioMeterProcessor(source, (vus) => {
+      vuSpan.innerHTML = JSON.stringify(vus);
+    }, audioCtx)
+    video.play();
+
+    // var anotherSource = audioCtx.createMediaElementSource(anotherVideo);
+    // anotherGainProcessor = new GainProcessor(anotherSource, audioCtx);
+    // anotherVideo.play();
+  }
+  var muteBtn = document.querySelector('#mute');
+  muteBtn.onclick = function () {
+    gainProcessor.isMute = !gainProcessor.isMute;
+    // anotherGainProcessor.isMute = !anotherGainProcessor.isMute;
+  }
+</script>
+</body>
+</html>
